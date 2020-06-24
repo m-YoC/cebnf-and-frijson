@@ -53,7 +53,7 @@ void setCEBNF() {
     _jobject    = Term("{") - t[_jstring - Term(":") - _jbase - t({ Term(",") - _jstring - Term(":") - _jbase })] - Term("}");
     _jarray     = Term("[") - t[_jbase - t({ Term(",") - _jbase })] - Term("]");
 
-    _jbase	    = _jnull | _jbool | _jstring | _jnumeric | _jobject | _jarray;
+    _jbase      = _jnull | _jbool | _jstring | _jnumeric | _jobject | _jarray;
 }
 
 
