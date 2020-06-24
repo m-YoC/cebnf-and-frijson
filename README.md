@@ -115,6 +115,9 @@ Json parse(const String& str) {
 frijson is a sample code of json class and parser using cebnf.  
 How to use is very simple and the parser can be easily modified.
 
+Note that this code does not work.
+
+
 ```cpp
 /*
 frijson usage - example code
@@ -146,10 +149,10 @@ int main() {
     /* get integer from json object */
     int res_int = json["base"]["int_data"].numeric<int>();
     /* get float from json array */
-    float res_float = json["base"][2].numeric<float>();
+    float res_float = json["base2"][2].numeric<float>();
 
     /*get bool and std::string(utf-8) */
-    bool res_bool = json["bool_data"].boolean();
+    bool res_bool = json["base"]["bool_data"].boolean();
     auto res_str = json["str_data"][0].str();
 
     /* check json type */
@@ -173,8 +176,8 @@ int main() {
     size_t size = json.size();
 
     /* set data to array */
-    json[0] = "new_data";
-    json[1][2] = 3.14;
+    json["base2"][0] = "new_data";
+    json["base2"][1][2] = 3.14;
     /*
         If type is eArray or eUndefined, expand size (and create array) automatically. Similar to object.
         Otherwise error.
