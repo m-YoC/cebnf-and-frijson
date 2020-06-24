@@ -28,88 +28,86 @@ t({ +f })
 This code is a part of frijson parser
 
 ```cpp
-private:
-		enum JsonType {
-			JSON_BASE, JSON_NULL, JSON_BOOL, JSON_BOOL_TRUE, JSON_BOOL_FALSE,
-			JSON_STRING, JSON_NUMERIC, JSON_OBJECT, JSON_ARRAY,
-		};
+enum JsonType {
+	JSON_BASE, JSON_NULL, JSON_BOOL, JSON_BOOL_TRUE, JSON_BOOL_FALSE,
+	JSON_STRING, JSON_NUMERIC, JSON_OBJECT, JSON_ARRAY,
+};
 
-		cebnf::CEBNF<JSON_BASE		> _jbase;
-		cebnf::CEBNF<JSON_NULL		> _jnull;
-		cebnf::CEBNF<JSON_BOOL		> _jbool;
-		cebnf::CEBNF<JSON_STRING	> _jstring;
-		cebnf::CEBNF<JSON_NUMERIC	> _jnumeric;
-		cebnf::CEBNF<JSON_OBJECT	> _jobject;
-		cebnf::CEBNF<JSON_ARRAY		> _jarray;
+cebnf::CEBNF<JSON_BASE		> _jbase;
+cebnf::CEBNF<JSON_NULL		> _jnull;
+cebnf::CEBNF<JSON_BOOL		> _jbool;
+cebnf::CEBNF<JSON_STRING	> _jstring;
+cebnf::CEBNF<JSON_NUMERIC	> _jnumeric;
+cebnf::CEBNF<JSON_OBJECT	> _jobject;
+cebnf::CEBNF<JSON_ARRAY		> _jarray;
 
-		void setCEBNF() {
-			using namespace cebnf;
-			CEBNF_OperatorTools t;
+void setCEBNF() {
+	using namespace cebnf;
+	CEBNF_OperatorTools t;
 
-			_jnull      = Term("null");
-			_jbool      = Term("true", JSON_BOOL_TRUE) | Term("false", JSON_BOOL_FALSE);
-			_jstring    = StringIE2('"', '"');
-			_jnumeric   = (Integer() | RealNumber()) - t[(Term("E") | Term("e")) - Integer()];
+	_jnull      = Term("null");
+	_jbool      = Term("true", JSON_BOOL_TRUE) | Term("false", JSON_BOOL_FALSE);
+	_jstring    = StringIE2('"', '"');
+	_jnumeric   = (Integer() | RealNumber()) - t[(Term("E") | Term("e")) - Integer()];
 
-			_jobject    = Term("{") - t[_jstring - Term(":") - _jbase - t({ Term(",") - _jstring - Term(":") - _jbase })] - Term("}");
-			_jarray     = Term("[") - t[_jbase - t({ Term(",") - _jbase })] - Term("]");
+	_jobject    = Term("{") - t[_jstring - Term(":") - _jbase - t({ Term(",") - _jstring - Term(":") - _jbase })] - Term("}");
+	_jarray     = Term("[") - t[_jbase - t({ Term(",") - _jbase })] - Term("]");
 
-			_jbase		= _jnull | _jbool | _jstring | _jnumeric | _jobject | _jarray;
-		}
+	_jbase		= _jnull | _jbool | _jstring | _jnumeric | _jobject | _jarray;
+}
 
 
-		Json parseImpl_Base(std::unique_ptr<cebnf::SyntaxNode>& node) {
-			switch (node->children[0]->getTokenID()) {
-			case JSON_NULL:
-				return std::move(parseImpl_Null(node->children[0]));
-			case JSON_BOOL:
-				return std::move(parseImpl_Bool(node->children[0]));
-			case JSON_STRING:
-				return std::move(parseImpl_String(node->children[0]));
-			case JSON_NUMERIC:
-				return std::move(parseImpl_Numeric(node->children[0]));
-			case JSON_OBJECT:
-				return std::move(parseImpl_Object(node->children[0]));
-			case JSON_ARRAY:
-				return std::move(parseImpl_Array(node->children[0]));
-			default:
-				return std::move(Json::createNull());
-			}
-		}
+Json parseImpl_Base(std::unique_ptr<cebnf::SyntaxNode>& node) {
+	switch (node->children[0]->getTokenID()) {
+	case JSON_NULL:
+		return std::move(parseImpl_Null(node->children[0]));
+	case JSON_BOOL:
+		return std::move(parseImpl_Bool(node->children[0]));
+	case JSON_STRING:
+		return std::move(parseImpl_String(node->children[0]));
+	case JSON_NUMERIC:
+		return std::move(parseImpl_Numeric(node->children[0]));
+	case JSON_OBJECT:
+		return std::move(parseImpl_Object(node->children[0]));
+	case JSON_ARRAY:
+		return std::move(parseImpl_Array(node->children[0]));
+	default:
+		return std::move(Json::createNull());
+	}
+}
 
-		Json parseImpl_Null(std::unique_ptr<cebnf::SyntaxNode>& node) {
-			return std::move(Json::createNull());
-		}
+Json parseImpl_Null(std::unique_ptr<cebnf::SyntaxNode>& node) {
+	return std::move(Json::createNull());
+}
 
-        /* and other parseImpl functions. */
+    /* and other parseImpl functions. */
 ```
 
 and how to create cebnf syntax tree is as follows.
 
 ```cpp
-public:
-		Parser() {
-			setCEBNF();
-		}
+Parser() {
+	setCEBNF();
+}
 
-		Json parse(const String& str) {
+Json parse(const String& str) {
 
-			std::unique_ptr<cebnf::SyntaxNode> syntax_tree;
+	std::unique_ptr<cebnf::SyntaxNode> syntax_tree;
 
-			/*UTF-8 BOM*/
-			if ((unsigned char)str[0] == 0xEF && (unsigned char)str[1] == 0xBB && (unsigned char)str[2] == 0xBF) {
-				syntax_tree = _jbase.parse(wash(str.substr(3)));
-			}
-			else {
-				syntax_tree = _jbase.parse(wash(str));
-			}
+	/*UTF-8 BOM*/
+	if ((unsigned char)str[0] == 0xEF && (unsigned char)str[1] == 0xBB && (unsigned char)str[2] == 0xBF) {
+		syntax_tree = _jbase.parse(wash(str.substr(3)));
+	}
+	else {
+		syntax_tree = _jbase.parse(wash(str));
+	}
 
-			/*syntax error check*/
-			if (!syntax_tree) return std::move(Json::createNull());
+	/*syntax error check*/
+	if (!syntax_tree) return std::move(Json::createNull());
 
-			return std::move(parseImpl_Base(syntax_tree));
+	return std::move(parseImpl_Base(syntax_tree));
 
-		}
+}
 ```
 
 ## frijson
