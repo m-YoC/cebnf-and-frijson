@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C++ Express 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "win_iconv", "win_iconv_static.vcxproj", "{1E24B05D-7E42-4B16-BE82-14C89D7B7E02}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1E24B05D-7E42-4B16-BE82-14C89D7B7E02}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1E24B05D-7E42-4B16-BE82-14C89D7B7E02}.Debug|Win32.Build.0 = Debug|Win32
+		{1E24B05D-7E42-4B16-BE82-14C89D7B7E02}.Debug|x64.ActiveCfg = Debug|x64
+		{1E24B05D-7E42-4B16-BE82-14C89D7B7E02}.Debug|x64.Build.0 = Debug|x64
+		{1E24B05D-7E42-4B16-BE82-14C89D7B7E02}.Release|Win32.ActiveCfg = Release|Win32
+		{1E24B05D-7E42-4B16-BE82-14C89D7B7E02}.Release|Win32.Build.0 = Release|Win32
+		{1E24B05D-7E42-4B16-BE82-14C89D7B7E02}.Release|x64.ActiveCfg = Release|x64
+		{1E24B05D-7E42-4B16-BE82-14C89D7B7E02}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
