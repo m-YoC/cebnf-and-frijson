@@ -14,8 +14,8 @@ Cebnf does not implemnet exception symbol.
 
 If string including repetition and last string are same, for example ( { A | B | C }, A ), cebnf cannot parse it. Please create helper.  
 
-Alternation( | ) should be NAND(at least one is false). When both are true, then cebnf adopts one with a longer acquisition string.  
-For example, if the string "abcd..." matches both ("abc" ... and "ab" ...), then cebnf adopts "abc".  
+Alternation( | ) should be NAND(at least one is false). When both are true, then cebnf selects one with a longer acquisition string.  
+For example, if the string "abcd..." matches both ("abc" ... and "ab" ...), then cebnf selects "abc".  
 
 cebnf::CEBNF<TokenID> f;  
 t({ f })  <= error  
