@@ -1,4 +1,4 @@
-# CEBNF: Extended Backus-Naur Form on C++
+# CEBNF: Extended Backus-Naur Form in C++
  
  (beta version)  
 
