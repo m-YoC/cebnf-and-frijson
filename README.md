@@ -110,8 +110,6 @@ Json parse(const String& str) {
 frijson is a sample code of json class and parser using cebnf.  
 How to use is very simple and the parser can be easily modified.
 
-Note that this code does not work.
-
 
 ```cpp
 /*
