@@ -17,11 +17,6 @@ If string including repetition and last string are same, for example ( { A | B |
 Alternation( | ) should be NAND(at least one is false). When both are true, then cebnf adopts one with a longer acquisition string.  
 For example, if the string "abcd..." matches both ("abc" ... and "ab" ...), then cebnf adopts "abc".  
 
-cebnf::CEBNF<TokenID> f;  
-t({ f })  <= error  
-std::initializer_list cannot use left reference value.  
-sorry, must add plus operator (wrapping).  
-t({ +f })  
 
 ## example code
 

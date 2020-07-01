@@ -143,31 +143,52 @@ namespace cebnf {
 	public:
 		using tagCEBNF = void;
 		CEBNF(){}
+
+		~CEBNF() {
+			if (_func != nullptr) {
+				delete _func;
+				//std::cout << "delete _func" << std::endl;
+			}
+		}
+
 		//EBNF(EBNF const& eq) : _func(eq._func) {}
 
 		/*TypeErasureClass*/
-		template<class Type, CEBNFBase_is_base_of_t<Type> = nullptr>
-		struct CEBNF_holder : public CEBNFBase {
+		//template<class Type, CEBNFBase_is_base_of_t<Type> = nullptr>
+		//struct CEBNF_holder : public CEBNFBase {
 
-			CEBNF_holder(Type h) : held(std::forward<Type>(h)) {}
+		//	CEBNF_holder(Type h) : held(std::forward<Type>(h)) {}
 
-			virtual SyntaxTree parse_impl(const std::string& s, const std::size_t begin) {
-				return held.parse_impl(s, begin);
-			}
+		//	virtual SyntaxTree parse_impl(const std::string& s, const std::size_t begin) {
+		//		return held.parse_impl(s, begin);
+		//	}
 
-			Type held;
-		};
+		//	Type held;
+		//};
+
+		//template<typename CEBNF_EQ, CEBNFBase_is_base_of_t<CEBNF_EQ> = nullptr>
+		//CEBNF(CEBNF_EQ const& eq) {
+		//	_func = std::shared_ptr<CEBNFBase>(new CEBNF_holder<CEBNF_EQ>(eq));
+		//}
+
+		//template<typename CEBNF_EQ, CEBNFBase_is_base_of_t<CEBNF_EQ> = nullptr>
+		//CEBNF& operator=(CEBNF_EQ const& eq) {
+		//	_func = std::shared_ptr<CEBNFBase>(new CEBNF_holder<CEBNF_EQ>(eq));
+		//	return *this;
+		//}
 
 		template<typename CEBNF_EQ, CEBNFBase_is_base_of_t<CEBNF_EQ> = nullptr>
 		CEBNF(CEBNF_EQ const& eq) {
-			_func = std::shared_ptr<CEBNFBase>(new CEBNF_holder<CEBNF_EQ>(eq));
+			_func = new CEBNF_EQ(eq);
 		}
 
 		template<typename CEBNF_EQ, CEBNFBase_is_base_of_t<CEBNF_EQ> = nullptr>
 		CEBNF& operator=(CEBNF_EQ const& eq) {
-			_func = std::shared_ptr<CEBNFBase>(new CEBNF_holder<CEBNF_EQ>(eq));
+			_func = new CEBNF_EQ(eq);
 			return *this;
 		}
+
+
 
 		std::unique_ptr<SyntaxNode> parse(const std::string& s) {
 			SyntaxTree&& res_tree = parse_impl(s, 0);
@@ -193,7 +214,7 @@ namespace cebnf {
 		}
 
 	private:
-		std::shared_ptr<CEBNFBase> _func = nullptr;
+		CEBNFBase* _func = nullptr;
 	};
 
 	struct Term : public CEBNFBase, tagValue {
@@ -438,8 +459,7 @@ namespace cebnf {
 			return Rep<CEBNF_C>(std::forward<CEBNF_C>(c));
 		}
 
-		/* Exclude raw CEBNF class (defining tagCEBNF) because it is not copied. */
-		template<class CEBNF_C, CEBNFBase_is_base_of_t<CEBNF_C> = nullptr, has_not_tagCEBNF_t<CEBNF_C> = nullptr>
+		template<class CEBNF_C, CEBNFBase_is_base_of_t<CEBNF_C> = nullptr>
 		Rep<CEBNF_C> operator()(std::initializer_list<CEBNF_C> c) {
 			return Rep<CEBNF_C>(std::move(*(c.begin())));
 		}
