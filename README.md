@@ -18,7 +18,7 @@ Alternation( | ) should be NAND(at least one is false). When both are true, then
 For example, if the string "abcd..." matches both ("abc" ... and "ab" ...), then cebnf selects "abc".  
 
 
-## example code
+## sample code
 
 This code is a part of frijson parser
 
