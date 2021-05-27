@@ -61,6 +61,8 @@ namespace frijson {
 
 	class JsonBase {
 	public:
+		virtual ~JsonBase() {}
+
 		virtual bool getBool() const { return false; }
 
 		virtual String& getStr() { return FRIJSON_NULL_STRING; }
@@ -74,10 +76,13 @@ namespace frijson {
 
 	class JsonNull : public JsonBase {
 	public:
+		//virtual ~JsonNull() {}
 	};
 
 	class JsonBool : public JsonBase {
 	public:
+		//virtual ~JsonBool() {}
+
 		JsonBool(bool e) : value(e){}
 		virtual bool getBool() const override { return value; }
 
@@ -87,6 +92,8 @@ namespace frijson {
 
 	class JsonString : public JsonBase {
 	public:
+		//virtual ~JsonString() {}
+
 		JsonString(String& e) : value(e) {}
 		JsonString(const String& e) : value(e) {}
 		virtual String& getStr() override { return value; }
@@ -98,6 +105,8 @@ namespace frijson {
 
 	class JsonNumber : public JsonBase {
 	public:
+		//virtual ~JsonNumber() {}
+
 		JsonNumber(String& e) : value(e) {}
 		JsonNumber(const String& e) : value(e) {}
 		virtual String& getStr() override { return value; }
@@ -109,6 +118,8 @@ namespace frijson {
 
 	class JsonObject : public JsonBase {
 	public:
+		//virtual ~JsonObject() {}
+
 		JsonObject(Object& e) : value(e) {}
 		JsonObject(const Object& e) : value(e) {}
 		virtual Object& getObj() override { return value; }
@@ -120,6 +131,8 @@ namespace frijson {
 
 	class JsonArray : public JsonBase {
 	public:
+		//virtual ~JsonArray() {}
+
 		JsonArray(Array& e) : value(e) {}
 		JsonArray(const Array& e) : value(e) {}
 		virtual Array& getArr() override { return value; }
