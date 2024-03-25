@@ -61,8 +61,6 @@ namespace frijson {
 
 	class JsonBase {
 	public:
-		virtual ~JsonBase() {}
-
 		virtual bool getBool() const { return false; }
 
 		virtual String& getStr() { return FRIJSON_NULL_STRING; }
@@ -76,13 +74,10 @@ namespace frijson {
 
 	class JsonNull : public JsonBase {
 	public:
-		//virtual ~JsonNull() {}
 	};
 
 	class JsonBool : public JsonBase {
 	public:
-		//virtual ~JsonBool() {}
-
 		JsonBool(bool e) : value(e){}
 		virtual bool getBool() const override { return value; }
 
@@ -92,8 +87,6 @@ namespace frijson {
 
 	class JsonString : public JsonBase {
 	public:
-		//virtual ~JsonString() {}
-
 		JsonString(String& e) : value(e) {}
 		JsonString(const String& e) : value(e) {}
 		virtual String& getStr() override { return value; }
@@ -105,8 +98,6 @@ namespace frijson {
 
 	class JsonNumber : public JsonBase {
 	public:
-		//virtual ~JsonNumber() {}
-
 		JsonNumber(String& e) : value(e) {}
 		JsonNumber(const String& e) : value(e) {}
 		virtual String& getStr() override { return value; }
@@ -118,8 +109,6 @@ namespace frijson {
 
 	class JsonObject : public JsonBase {
 	public:
-		//virtual ~JsonObject() {}
-
 		JsonObject(Object& e) : value(e) {}
 		JsonObject(const Object& e) : value(e) {}
 		virtual Object& getObj() override { return value; }
@@ -131,8 +120,6 @@ namespace frijson {
 
 	class JsonArray : public JsonBase {
 	public:
-		//virtual ~JsonArray() {}
-
 		JsonArray(Array& e) : value(e) {}
 		JsonArray(const Array& e) : value(e) {}
 		virtual Array& getArr() override { return value; }
@@ -142,6 +129,23 @@ namespace frijson {
 		Array value;
 	};
 
+	/* string to numeric *//*
+	namespace s2n {
+		template<class NumericType>
+		NumericType numeric(String str);
+
+		template<> char					numeric<char				>(String str) { return (char)std::stoi(str);			}
+		template<> unsigned char		numeric<unsigned char		>(String str) { return (unsigned char)std::stoi(str);	}
+		template<> float				numeric<float				>(String str) { return std::stof(str);					}
+		template<> double				numeric<double				>(String str) { return std::stod(str);					}
+		template<> long double			numeric<long double			>(String str) { return std::stold(str);					}
+		template<> int					numeric<int					>(String str) { return std::stoi(str);					}
+		template<> unsigned int			numeric<unsigned int		>(String str) { return (unsigned int)std::stoul(str);	}
+		template<> long					numeric<long				>(String str) { return std::stol(str);					}
+		template<> long long			numeric<long long			>(String str) { return std::stoll(str);					}
+		template<> unsigned long		numeric<unsigned long		>(String str) { return std::stoul(str);					}
+		template<> unsigned long long	numeric<unsigned long long	>(String str) { return std::stoull(str);				}
+	}//*/
 	
 
 	class Json {
@@ -175,20 +179,27 @@ namespace frijson {
 		String& str() { return _dat->getStr(); }
 		const String& str() const { return _dat->getStr(); }
 
+		/*
+		template<class NumericType>
+		NumericType numeric() const { return s2n::numeric<NumericType>(_dat->getStr()); };
+		//*/
+
+		//*
 		template<class NumericType>
 		NumericType numeric() const;
 
 		template<> char					numeric<char				>() const { return (char)std::stoi(_dat->getStr());			}
-		template<> unsigned char		numeric<unsigned char		>() const { return (unsigned char)std::stoi(_dat->getStr());	}
+		template<> unsigned char		numeric<unsigned char		>() const { return (unsigned char)std::stoi(_dat->getStr());}
 		template<> float				numeric<float				>() const { return std::stof(_dat->getStr());				}
 		template<> double				numeric<double				>() const { return std::stod(_dat->getStr());				}
 		template<> long double			numeric<long double			>() const { return std::stold(_dat->getStr());				}
 		template<> int					numeric<int					>() const { return std::stoi(_dat->getStr());				}
-		template<> unsigned int			numeric<unsigned int		>() const { return (unsigned int)std::stoul(_dat->getStr());	}
+		template<> unsigned int			numeric<unsigned int		>() const { return (unsigned int)std::stoul(_dat->getStr());}
 		template<> long					numeric<long				>() const { return std::stol(_dat->getStr());				}
 		template<> long long			numeric<long long			>() const { return std::stoll(_dat->getStr());				}
 		template<> unsigned long		numeric<unsigned long		>() const { return std::stoul(_dat->getStr());				}
 		template<> unsigned long long	numeric<unsigned long long	>() const { return std::stoull(_dat->getStr());				}
+		//*/
 		
 		/*find object key*/
 		bool find(const String& key) const {
@@ -216,25 +227,22 @@ namespace frijson {
 
 		/*safe: only existing key*/
 		const Json& operator[](const String& key) const {
-			if (!find(key)) {
-				assert(false);
-			}
+			assert(find(key));
+
 			return _dat->getObj().at(key);
 		}
 
 		/*safe: only existing key*/
 		Json& at(const String& key) {
-			if (!find(key)) {
-				assert(false);
-			}
+			assert(find(key));
+
 			return _dat->getObj().at(key);
 		}
 
 		/*safe: only existing key*/
 		const Json& at(const String& key) const {
-			if (!find(key)) {
-				assert(false);
-			}
+			assert(find(key));
+
 			return _dat->getObj().at(key);
 		}
 
@@ -262,26 +270,68 @@ namespace frijson {
 
 		/*safe: const size*/
 		const Json& operator[](size_t idx) const {
-			if (idx >= _dat->getArr().size()) {
-				assert(false);
-			}
+			assert(idx < _dat->getArr().size());
+
 			return _dat->getArr().at(idx);
 		}
 
 		/*safe: const size*/
 		Json& at(size_t idx) {
-			if (idx >= _dat->getArr().size()) {
-				assert(false);
-			}
+			assert(idx < _dat->getArr().size());
+
 			return _dat->getArr().at(idx);
 		}
 
 		/*safe: const size*/
 		const Json& at(size_t idx) const {
-			if (idx >= _dat->getArr().size()) {
-				assert(false);
-			}
+			assert(idx < _dat->getArr().size());
+
 			return _dat->getArr().at(idx);
+		}
+
+		void push_back(const Json& json) {
+			if (this->isType(Json::ValueType::eUndefined)) *this = initWithArray();
+			assert(this->isArray());
+
+			_dat->getArr().push_back(json);
+		}
+
+		void push_back(bool b) {
+			if (this->isType(Json::ValueType::eUndefined)) *this = initWithArray();
+			assert(this->isArray());
+
+			_dat->getArr().push_back(createBool(b));
+		}
+
+		void push_back(const String& str) {
+			if (this->isType(Json::ValueType::eUndefined)) *this = initWithArray();
+			assert(this->isArray());
+
+			_dat->getArr().push_back(createString(str));
+		}
+
+		void push_back(const char* str) {
+			if (this->isType(Json::ValueType::eUndefined)) *this = initWithArray();
+			assert(this->isArray());
+
+			_dat->getArr().push_back(createString(str));
+		}
+
+		template<class NumericType, typename std::enable_if<std::is_scalar<NumericType>::value>::type* = nullptr>
+		void push_back(NumericType num) {
+			if (this->isType(Json::ValueType::eUndefined)) *this = initWithArray();
+			assert(this->isArray());
+
+			_dat->getArr().push_back(createNumeric(num));
+		}
+
+
+		Json& initWithObject() {
+			return (*this = createObject());
+		}
+
+		Json& initWithArray() {
+			return (*this = createArray());
 		}
 
 

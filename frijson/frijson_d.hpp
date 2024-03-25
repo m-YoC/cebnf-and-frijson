@@ -6,8 +6,9 @@ namespace frijson {
 
 	class Dumper {
 	public:
-		static String Dump(Json& json) {
-			return DumpValue(json);
+		static String Dump(const Json& json, bool minimize = true) {
+			if(minimize) return DumpValue(json);
+			return ToReadable(DumpValue(json));
 		}
 
 		/*add utf-8 byte order mark <EF BB BF>*/
@@ -38,7 +39,8 @@ namespace frijson {
 					continue;
 				}
 				if (str[f] == '/') {
-					dst += "\\/";
+					// dst += "\\/";
+					dst += "/";
 					f++;
 					continue;
 				}
@@ -76,7 +78,7 @@ namespace frijson {
 			dst += '\"';
 			return dst;
 		}
-		static String DumpValue(Json& json) {
+		static String DumpValue(const Json& json) {
 
 			if (json.isNull()) {
 				return u8"null";
@@ -100,6 +102,8 @@ namespace frijson {
 
 			if (json.isObject()) {
 				frijson::String dst;
+				
+
 				dst += '{';
 				if (json._dat->getObj().begin() == json._dat->getObj().end()) {
 					return "";
@@ -132,6 +136,51 @@ namespace frijson {
 			}
 
 			return u8"null";
+		}
+
+		static String ToReadable(String dumped) {
+			String res;
+			int sc = 0;
+			char prev = ' ';
+			for(auto s: dumped) {
+				if(s == '{') {
+					sc += 4;
+					res += s;
+					res += "\n";
+					res += std::string(sc, ' ');
+				} else if(s == '}') {
+					sc -= 4;
+					res += "\n";
+					res += std::string(sc, ' ');
+					res += s;
+				} else if(s == ':') {
+					res += s;
+					res += " ";
+				} else {
+					if( prev == '}' ) {
+						if( s == ',' ) {
+							res += s;
+							res += "\n";
+							res += std::string(sc, ' ');
+						} else {
+							res += "\n";
+							res += std::string(sc, ' ');
+							res += s;
+						}
+					} else {
+						if( s == ',' ) {
+							res += s;
+							res += " ";
+						}else {
+							res += s;
+						}
+						
+					}
+				}
+				prev = s;
+			}
+
+			return res;
 		}
 	};
 

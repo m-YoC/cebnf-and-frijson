@@ -580,7 +580,7 @@ namespace cebnf {
 					}
 					else if (s[itr] == 'u') {
 						itr++;
-						std::string subs = s.substr(itr, std::min(10U, s.length() - itr));
+						std::string subs = s.substr(itr, std::min<unsigned int>(10U, s.length() - itr));
 						auto utf8 = StringHelper::toUTF8surrogate(subs);
 						if (utf8.first == std::string()) {
 							return Tree::Create();

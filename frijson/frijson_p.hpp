@@ -1,7 +1,7 @@
 #pragma once
 
 #define WIN_ICONV_USING_STATIC
-#include "convert/converter.hpp"
+#include "../convert/converter.hpp"
 
 #include "frijson.hpp"
 
@@ -50,7 +50,7 @@ namespace frijson {
 			return std::move(parse(c3::Converter::auto_convert(buf, fromlist, "utf-8")));
 		}
 
-	private:
+	protected:
 		enum JsonType {
 			JSON_BASE,
 			JSON_NULL,
@@ -61,6 +61,7 @@ namespace frijson {
 			JSON_NUMERIC,
 			JSON_OBJECT,
 			JSON_ARRAY,
+			JSON_END,
 		};
 
 		cebnf::CEBNF<JSON_BASE		> _jbase;
@@ -71,7 +72,7 @@ namespace frijson {
 		cebnf::CEBNF<JSON_OBJECT	> _jobject;
 		cebnf::CEBNF<JSON_ARRAY		> _jarray;
 
-		void setCEBNF() {
+		virtual void setCEBNF() {
 			using namespace cebnf;
 			CEBNF_OperatorTools t;
 
@@ -83,11 +84,11 @@ namespace frijson {
 			_jobject    = Term("{") - t[_jstring - Term(":") - _jbase - t({ Term(",") - _jstring - Term(":") - _jbase })] - Term("}");
 			_jarray     = Term("[") - t[_jbase - t({ Term(",") - _jbase })] - Term("]");
 
-			_jbase		= _jnull | _jbool | _jstring | _jnumeric | _jobject | _jarray;
+			_jbase = _jnull | _jbool | _jstring | _jnumeric | _jobject | _jarray;
 		}
 
 
-		Json parseImpl_Base(std::unique_ptr<cebnf::SyntaxNode>& node) {
+		virtual Json parseImpl_Base(std::unique_ptr<cebnf::SyntaxNode>& node) {
 			switch (node->children[0]->getTokenID()) {
 			case JSON_NULL:
 				return std::move(parseImpl_Null(node->children[0]));
@@ -106,11 +107,11 @@ namespace frijson {
 			}
 		}
 
-		Json parseImpl_Null(std::unique_ptr<cebnf::SyntaxNode>& node) {
+		virtual Json parseImpl_Null(std::unique_ptr<cebnf::SyntaxNode>& node) {
 			return std::move(Json::createNull());
 		}
 
-		Json parseImpl_Bool(std::unique_ptr<cebnf::SyntaxNode>& node) {
+		virtual Json parseImpl_Bool(std::unique_ptr<cebnf::SyntaxNode>& node) {
 			if (node->children[0]->getTokenID() == JSON_BOOL_TRUE) {
 				return std::move(Json::createBool(true));
 			}
@@ -121,24 +122,27 @@ namespace frijson {
 		}
 
 		/*JsonString -> StringIE2 -> {<">, InnerString, <">}*/
-		String getString_ofSyntaxTreeJsonString(std::unique_ptr<cebnf::SyntaxNode>& node) {
+		virtual String getString_ofSyntaxTreeJsonString(std::unique_ptr<cebnf::SyntaxNode>& node) {
 			if (node->children[0]->children.size() == 3) {
 				return std::move(node->children[0]->children[1]->getString());
 			}
 			else if (node->children[0]->children.size() == 1) {
 				return std::move(node->children[0]->children[0]->getString());
 			}
+			else{
+				return "";
+			}
 		}
 
-		Json parseImpl_String(std::unique_ptr<cebnf::SyntaxNode>& node) {
+		virtual Json parseImpl_String(std::unique_ptr<cebnf::SyntaxNode>& node) {
 			return std::move(Json::createString(getString_ofSyntaxTreeJsonString(node)));
 		}
 
-		Json parseImpl_Numeric(std::unique_ptr<cebnf::SyntaxNode>& node) {
+		virtual Json parseImpl_Numeric(std::unique_ptr<cebnf::SyntaxNode>& node) {
 			return std::move(Json::createNumeric(node->getString()));
 		}
 
-		Json parseImpl_Object(std::unique_ptr<cebnf::SyntaxNode>& node) {
+		virtual Json parseImpl_Object(std::unique_ptr<cebnf::SyntaxNode>& node) {
 			const size_t children_size = node->children.size();
 
 			Json obj = Json::createObject();
@@ -154,7 +158,7 @@ namespace frijson {
 			return std::move(obj);
 		}
 
-		Json parseImpl_Array(std::unique_ptr<cebnf::SyntaxNode>& node) {
+		virtual Json parseImpl_Array(std::unique_ptr<cebnf::SyntaxNode>& node) {
 			const size_t children_size = node->children.size();
 			const size_t arr_size = (children_size - 1) / 2;
 
@@ -174,7 +178,7 @@ namespace frijson {
 		}
 
 		/*remove spaces, tabs, and newlines without them in strings("...")*/
-		String wash(const String& str) {
+		virtual String wash(const String& str) {
 			String dst;
 			dst.reserve(str.length());
 			size_t itr = 0;

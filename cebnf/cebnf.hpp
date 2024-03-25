@@ -82,6 +82,7 @@ namespace cebnf {
 
 	struct CEBNFBase {
 		virtual SyntaxTree parse_impl(const std::string& s, const std::size_t begin) = 0;
+		virtual ~CEBNFBase(){}
 	};
 
 	template<typename type>
