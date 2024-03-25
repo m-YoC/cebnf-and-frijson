@@ -1,6 +1,5 @@
 #pragma once
 
-
 /*
 簡易jsonパーサ frijson
 

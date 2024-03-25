@@ -8,6 +8,7 @@
 #include "../cebnf/cebnf.hpp"
 #include "../cebnf/cebnf_helper.hpp"
 
+
 namespace frijson {
 	class Parser {
 		friend class Json;

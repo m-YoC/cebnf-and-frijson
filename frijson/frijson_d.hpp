@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include "frijson.hpp"
 
 namespace frijson {

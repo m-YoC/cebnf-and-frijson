@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include "cebnf.hpp"
 
 class PrintSyntaxTree {
