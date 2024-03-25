@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+  compiler:
+    build:
+      context: .
+      dockerfile: clang.dockerfile
+      # dockerfile: gcc.dockerfile
+      # container_name: $CONTAINER_NAME
+      # hostname: container
+      args:
+        WORKDIR: $WORKDIR
+    image: cebnf-test
+    volumes:
+      - "../cebnf:/$WORKDIR/cebnf"
+      - "../convert:/$WORKDIR/convert"
+      - "../frijson:/$WORKDIR/frijson"
+    tty: true
