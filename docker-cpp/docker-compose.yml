@@ -1,4 +1,3 @@
-version: "3"
 
 services:
   compiler:
@@ -6,11 +5,11 @@ services:
       context: .
       dockerfile: clang.dockerfile
       # dockerfile: gcc.dockerfile
-      # container_name: $CONTAINER_NAME
-      # hostname: container
       args:
         WORKDIR: $WORKDIR
     image: cebnf-test
+    # container_name: $CONTAINER_NAME
+    hostname: container-$COMPOSE_PROJECT_NAME
     volumes:
       - "../cebnf:/$WORKDIR/cebnf"
       - "../convert:/$WORKDIR/convert"
